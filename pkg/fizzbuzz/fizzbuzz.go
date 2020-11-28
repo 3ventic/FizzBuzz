@@ -16,18 +16,16 @@ func FizzBuzz(ctx context.Context, multipleReplacements map[int]string) (<-chan 
 		return nil, errors.New("multipleReplacements cannot be nil")
 	}
 	multiples := make([]int, 0, len(multipleReplacements))
-	maxLen := 0
-	for m, v := range multipleReplacements {
+	for m := range multipleReplacements {
 		multiples = append(multiples, m)
-		maxLen += len(v)
 	}
 	sort.Ints(multiples)
 	c := make(chan string)
-	go fizzBuzz(ctx, multiples, multipleReplacements, maxLen, c)
+	go fizzBuzz(ctx, multiples, multipleReplacements, c)
 	return c, nil
 }
 
-func fizzBuzz(ctx context.Context, multiples []int, multipleReplacements map[int]string, maxLen int, c chan<- string) {
+func fizzBuzz(ctx context.Context, multiples []int, multipleReplacements map[int]string, c chan<- string) {
 	for i := 1; ; i++ {
 		select {
 		case <-ctx.Done():
@@ -35,7 +33,6 @@ func fizzBuzz(ctx context.Context, multiples []int, multipleReplacements map[int
 			return
 		default:
 			var sb strings.Builder
-			sb.Grow(maxLen)
 			for _, m := range multiples {
 				if i%m == 0 {
 					sb.WriteString(multipleReplacements[m])
