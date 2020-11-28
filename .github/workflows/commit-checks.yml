@@ -1,4 +1,4 @@
-name: Codecov
+name: commit-checks
 on:
   push:
     tags:
@@ -17,7 +17,7 @@ jobs:
       with:
         version: v1.29
   cover:
-    name: code coverage
+    name: code-coverage
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
