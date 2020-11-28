@@ -3,6 +3,7 @@ package fizzbuzz
 import (
 	"context"
 	"errors"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -20,6 +21,7 @@ func FizzBuzz(ctx context.Context, multipleReplacements map[int]string) (<-chan 
 		multiples = append(multiples, m)
 		maxLen += len(v)
 	}
+	sort.Ints(multiples)
 	c := make(chan string)
 	go fizzBuzz(ctx, multiples, multipleReplacements, maxLen, c)
 	return c, nil
