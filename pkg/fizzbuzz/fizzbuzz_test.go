@@ -9,7 +9,8 @@ import (
 
 func TestFizzBuzz(t *testing.T) {
 	t.Run("errors with nil replacements", func(t *testing.T) {
-		ctx := context.Background()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		c, err := fizzbuzz.FizzBuzz(ctx, nil)
 		if err == nil {
 			t.Errorf("expected non-nil error, got: %v", err)
@@ -20,7 +21,8 @@ func TestFizzBuzz(t *testing.T) {
 	})
 
 	t.Run("succeeds with normal FizzBuzz", func(t *testing.T) {
-		ctx := context.Background()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		replacements := map[int]string{
 			3: "Fizz",
 			5: "Buzz",
@@ -42,7 +44,8 @@ func TestFizzBuzz(t *testing.T) {
 	})
 
 	t.Run("succeeds with no replacements", func(t *testing.T) {
-		ctx := context.Background()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		replacements := map[int]string{}
 		c, err := fizzbuzz.FizzBuzz(ctx, replacements)
 		if err != nil {
@@ -61,7 +64,8 @@ func TestFizzBuzz(t *testing.T) {
 	})
 
 	t.Run("succeeds with all primes under 19", func(t *testing.T) {
-		ctx := context.Background()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		replacements := map[int]string{
 			2:  "Two",
 			3:  "Three",
@@ -85,6 +89,23 @@ func TestFizzBuzz(t *testing.T) {
 			if value != e {
 				t.Errorf("expected '%s' but got '%s'", e, value)
 			}
+		}
+	})
+
+	t.Run("closes channel and stops after context cancellation", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		replacements := map[int]string{}
+		c, err := fizzbuzz.FizzBuzz(ctx, replacements)
+		if err != nil {
+			t.Errorf("expected nil error, got: %v", err)
+		}
+		if c == nil {
+			t.Errorf("expected non-nil channel, got: %v", c)
+		}
+		cancel()
+		_, ok := <-c
+		if ok {
+			t.Error("channel was not closed properly")
 		}
 	})
 }
