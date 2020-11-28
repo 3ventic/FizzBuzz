@@ -1,7 +1,23 @@
 name: Codecov
-on: [push]
+on:
+  push:
+    tags:
+    - v*
+    branches:
+    - main
+  pull_request:
 jobs:
-  run:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v2
+      with:
+        version: v1.29
+  cover:
+    name: code coverage
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
